@@ -55,7 +55,6 @@ except KeyError:
 
 try:
     dns_servers = _getYAMLKey("CF_DNS_SERVERS"),
-    dns_servers = dns_servers.split()
 except KeyError:
     dns_servers = False
 
@@ -110,6 +109,7 @@ def create_txt_record(args):
     zone_id = _get_zone_id(domain)
     name = "{0}.{1}".format('_acme-challenge', domain)
     url = "https://api.cloudflare.com/client/v4/zones/{0}/dns_records".format(zone_id)
+    logger.info(" + {0}".format(url))
     payload = {
         'type': 'TXT',
         'name': name,
@@ -161,13 +161,11 @@ def deploy_cert(args):
 
 def main(argv):
     ops = {
-        'challenge-dns-start'     : create_txt_record,
-        'challenge-dns-stop'      : delete_txt_record,
-        'live-updated'            : deploy_cert,
-        'challenge-http-start'    : noop,
-        'challenge-http-stop'     : noop,
-        'challenge-tls-sni-start' : noop,
-        'challenge-tls-sni-end'   : noop
+        'challenge-dns-start' : create_txt_record,
+        'challenge-dns-stop'  : delete_txt_record,
+        'live-updated'        : deploy_cert,
+        'challenge-http-start': noop,
+        'challenge-http-stop' : noop
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
