@@ -133,6 +133,11 @@ def delete_txt_record(args):
     r.raise_for_status()
 
 
+def noop(args)
+    logger.info(" + Operation not supported")
+    return
+
+
 def deploy_cert(args):
     domain, privkey_pem, cert_pem, fullchain_pem, chain_pem = args
     logger.info(' + ssl_certificate: {0}'.format(fullchain_pem))
@@ -142,9 +147,11 @@ def deploy_cert(args):
 
 def main(argv):
     ops = {
-        'deploy_challenge': create_txt_record,
-        'clean_challenge' : delete_txt_record,
-        'deploy_cert'     : deploy_cert,
+        'challenge-dns-start' : create_txt_record,
+        'challenge-dns-stop'  : delete_txt_record,
+        'live-updated'        : deploy_cert,
+        'challenge-http-start': noop,
+        'challenge-http-stop' : noop
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
