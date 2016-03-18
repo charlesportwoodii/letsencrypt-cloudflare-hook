@@ -161,11 +161,13 @@ def deploy_cert(args):
 
 def main(argv):
     ops = {
-        'challenge-dns-start' : create_txt_record,
-        'challenge-dns-stop'  : delete_txt_record,
-        'live-updated'        : deploy_cert,
-        'challenge-http-start': noop,
-        'challenge-http-stop' : noop
+        'challenge-dns-start'     : create_txt_record,
+        'challenge-dns-stop'      : delete_txt_record,
+        'live-updated'            : deploy_cert,
+        'challenge-http-start'    : noop,
+        'challenge-http-stop'     : noop,
+        'challenge-tls-sni-start' : noop,
+        'challenge-tls-sni-end'   : noop
     }
     logger.info(" + CloudFlare hook executing: {0}".format(argv[0]))
     ops[argv[0]](argv[1:])
