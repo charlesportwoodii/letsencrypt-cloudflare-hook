@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from __future__ import absolute_import
 from __future__ import division
@@ -10,6 +10,7 @@ from builtins import str
 from future import standard_library
 standard_library.install_aliases()
 
+import yaml
 import dns.exception
 import dns.resolver
 import logging
@@ -31,19 +32,33 @@ logger.setLevel(logging.INFO)
 
 try:
     CF_HEADERS = {
-        'X-Auth-Email': os.environ['CF_EMAIL'],
-        'X-Auth-Key'  : os.environ['CF_KEY'],
+        'X-Auth-Email': _getYAMLKey(CF_EMAIL),
+        'X-Auth-Key'  : _getYAMLKey(CF_KEY),
         'Content-Type': 'application/json',
     }
 except KeyError:
-    logger.error(" + Unable to locate Cloudflare credentials in environment!")
+    logger.error(" + Unable to locate Cloudflare credentials in /var/lib/amce/cloudflare.yml!")
     sys.exit(1)
 
 try:
-    dns_servers = os.environ['CF_DNS_SERVERS']
+    dns_servers = _getYAMLKey(CF_DNS_SERVERS),
     dns_servers = dns_servers.split()
 except KeyError:
     dns_servers = False
+
+def _getYAMLKey(name)
+    try:
+        with open("/var/lib/acme/cloudflare.yml", 'r') as stream:
+            try:
+                document = yaml.load(stream)
+                return document[name]
+            except yaml.YAMLError as exc:
+                logger.info(" + Unable to locate record named {0}".format(name))
+                sys.exit(1)
+    except:
+        logger.info(" + Unable to load /var/lib/acme/cloudflare.yml")
+        sys.exit(1)
+        
 
 def _has_dns_propagated(name, token):
     txt_records = []
