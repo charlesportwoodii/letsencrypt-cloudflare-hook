@@ -30,23 +30,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
-try:
-    CF_HEADERS = {
-        'X-Auth-Email': _getYAMLKey(CF_EMAIL),
-        'X-Auth-Key'  : _getYAMLKey(CF_KEY),
-        'Content-Type': 'application/json',
-    }
-except KeyError:
-    logger.error(" + Unable to locate Cloudflare credentials in /var/lib/amce/cloudflare.yml!")
-    sys.exit(1)
-
-try:
-    dns_servers = _getYAMLKey(CF_DNS_SERVERS),
-    dns_servers = dns_servers.split()
-except KeyError:
-    dns_servers = False
-
-def _getYAMLKey(name)
+def _getYAMLKey(name):
     try:
         with open("/var/lib/acme/cloudflare.yml", 'r') as stream:
             try:
@@ -59,6 +43,21 @@ def _getYAMLKey(name)
         logger.info(" + Unable to load /var/lib/acme/cloudflare.yml")
         sys.exit(1)
         
+try:
+    CF_HEADERS = {
+        'X-Auth-Email': _getYAMLKey("CF_EMAIL"),
+        'X-Auth-Key'  : _getYAMLKey("CF_KEY"),
+        'Content-Type': 'application/json',
+    }
+except KeyError:
+    logger.error(" + Unable to locate Cloudflare credentials in /var/lib/amce/cloudflare.yml!")
+    sys.exit(1)
+
+try:
+    dns_servers = _getYAMLKey("CF_DNS_SERVERS"),
+    dns_servers = dns_servers.split()
+except KeyError:
+    dns_servers = False
 
 def _has_dns_propagated(name, token):
     txt_records = []
@@ -148,7 +147,7 @@ def delete_txt_record(args):
     r.raise_for_status()
 
 
-def noop(args)
+def noop(args):
     logger.info(" + Operation not supported")
     return
 
